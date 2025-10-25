@@ -13,10 +13,10 @@ export default function ApplicationTimeline() {
   useEffect(() => {
     const fetchApplication = async () => {
       try {
-        const res = await axiosInstance.get(`/applicant/application/${id}`, {
+        const res = await axiosInstance.get(`/applications/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setApplication(res.data);
+        setApplication(res.data.application);
       } catch (err) {
         console.error(err);
       } finally {
@@ -46,17 +46,14 @@ export default function ApplicationTimeline() {
 
   return (
     <div className="container mt-5">
-      <h2 className="mb-3">{application.jobId.title}</h2>
-      <p>{application.jobId.description}</p>
+      <h2 className="mb-3">{application.jobTitle}</h2>
+      <p><strong>Role Type:</strong> {application.roleType}</p>
       <p>
-        <strong>Status:</strong>{" "}
+        <strong>Current Status:</strong>{" "}
         <span className={`badge ${statusColor(application.status)}`}>
           {application.status}
         </span>
       </p>
-      <p><strong>Role Type:</strong> {application.roleType}</p>
-      <p><strong>Latest Comment:</strong> {application.latestComment || "No comments yet"}</p>
-      <p><strong>Posted On:</strong> {new Date(application.jobId.createdAt).toLocaleDateString()}</p>
       <p><strong>Last Updated:</strong> {new Date(application.updatedAt).toLocaleString()}</p>
 
       {application.timeline && application.timeline.length > 0 && (
@@ -66,7 +63,7 @@ export default function ApplicationTimeline() {
             <div key={index} className={`card mb-2 shadow-sm p-3 ${statusColor(event.status)}`}>
               <p className="mb-1"><strong>Status:</strong> {event.status}</p>
               <p className="mb-1"><strong>Comment:</strong> {event.comment || "N/A"}</p>
-              <p className="mb-0 text-muted"><strong>Date:</strong> {new Date(event.date).toLocaleString()}</p>
+              <p className="mb-0 text-muted"><strong>Date:</strong> {new Date(event.updatedAt).toLocaleString()}</p>
             </div>
           ))}
         </div>
@@ -74,4 +71,5 @@ export default function ApplicationTimeline() {
     </div>
   );
 }
+
 

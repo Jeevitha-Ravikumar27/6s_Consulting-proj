@@ -14,7 +14,7 @@ export default function ApplicantDashboard() {
     underReview: 0,
   });
 
-  const navigate = useNavigate(); // for redirecting to timeline
+  const navigate = useNavigate(); 
 
   const fetchApplications = async () => {
     if (!token) return; 
@@ -50,7 +50,7 @@ export default function ApplicantDashboard() {
   };
 
   const handleRowClick = (appId) => {
-    // Redirect to ApplicationTimeline page
+    
     navigate(`/application/${appId}/timeline`);
   };
 

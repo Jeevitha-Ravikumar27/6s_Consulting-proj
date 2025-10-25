@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 
@@ -13,6 +13,8 @@ export default function ApplicantDashboard() {
     rejected: 0,
     underReview: 0,
   });
+
+  const navigate = useNavigate(); // for redirecting to timeline
 
   const fetchApplications = async () => {
     if (!token) return; 
@@ -45,6 +47,11 @@ export default function ApplicantDashboard() {
       : status === "Under Review"
       ? "bg-warning text-dark"
       : "bg-secondary";
+  };
+
+  const handleRowClick = (appId) => {
+    // Redirect to ApplicationTimeline page
+    navigate(`/application/${appId}/timeline`);
   };
 
   return (
@@ -89,12 +96,15 @@ export default function ApplicantDashboard() {
               <th>Role Type</th>
               <th>Status</th>
               <th>Last Updated</th>
-              <th>Timeline</th>
             </tr>
           </thead>
           <tbody>
             {applications.map((app) => (
-              <tr key={app._id}>
+              <tr
+                key={app._id}
+                style={{ cursor: "pointer" }}
+                onClick={() => handleRowClick(app._id)}
+              >
                 <td>{app.jobTitle}</td>
                 <td>{app.roleType}</td>
                 <td>
@@ -103,18 +113,11 @@ export default function ApplicantDashboard() {
                   </span>
                 </td>
                 <td>{new Date(app.updatedAt).toLocaleString()}</td>
-                <td>
-                  <Link
-                    className="btn btn-sm btn-primary"
-                    to={`/application/${app._id}/timeline`}
-                  >
-                    View Timeline
-                  </Link>
-                </td>
               </tr>
             ))}
           </tbody>
         </table>
+        {applications.length === 0 && <p className="text-center mt-3">You have not applied to any jobs yet.</p>}
       </div>
     </div>
   );

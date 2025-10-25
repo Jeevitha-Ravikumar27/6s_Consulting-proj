@@ -4,7 +4,7 @@ import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 
 export default function JobManagement() {
-  const { token } = useAuth(); 
+  const { token } = useAuth();
   const [jobs, setJobs] = useState([]);
   const [form, setForm] = useState({ title: "", description: "", roleType: "technical", id: "" });
   const [loading, setLoading] = useState(false);
@@ -23,13 +23,19 @@ export default function JobManagement() {
 
   useEffect(() => {
     fetchJobs();
-  }, [token]); 
+  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     try {
       if (form.id) {
+        const jobToUpdate = jobs.find((j) => j._id === form.id);
+        if (jobToUpdate.roleType === "technical") {
+          alert("Technical jobs cannot be updated.");
+          setLoading(false);
+          return;
+        }
         await axiosInstance.put(`/admin/jobs/${form.id}`, form, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -66,6 +72,9 @@ export default function JobManagement() {
     }
   };
 
+  const technicalJobs = jobs.filter((j) => j.roleType === "technical");
+  const nonTechnicalJobs = jobs.filter((j) => j.roleType === "non-technical");
+
   return (
     <div className="container mt-5">
       <h2 className="mb-4">Job Management</h2>
@@ -82,6 +91,7 @@ export default function JobManagement() {
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
               required
+              disabled={form.id && form.roleType === "technical"}
             />
           </div>
           <div className="mb-3">
@@ -91,6 +101,7 @@ export default function JobManagement() {
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
               required
+              disabled={form.id && form.roleType === "technical"}
             />
           </div>
           <div className="mb-3">
@@ -98,6 +109,7 @@ export default function JobManagement() {
               className="form-select"
               value={form.roleType}
               onChange={(e) => setForm({ ...form, roleType: e.target.value })}
+              disabled={form.id} 
             >
               <option value="technical">Technical</option>
               <option value="non-technical">Non-Technical</option>
@@ -109,32 +121,41 @@ export default function JobManagement() {
         </form>
       </div>
 
-      {/* Job List */}
-      <h3>Existing Jobs</h3>
-      <div className="row">
-        {jobs.map((job) => (
+      {/* Display Jobs by Category */}
+      <h3>Technical Jobs</h3>
+      <div className="row mb-4">
+        {technicalJobs.map((job) => (
           <div className="col-md-4 mb-3" key={job._id}>
             <div className="card shadow-sm p-3 h-100">
               <h5>{job.title}</h5>
               <p>{job.description}</p>
-              <span
-                className={`badge mb-2 ${
-                  job.roleType === "technical" ? "bg-success" : "bg-info"
-                }`}
-              >
-                {job.roleType}
-              </span>
+              <span className="badge bg-success mb-2">{job.roleType}</span>
               <div>
-                <button
-                  className="btn btn-sm btn-warning me-2"
-                  onClick={() => handleEdit(job)}
-                >
+                <button className="btn btn-sm btn-warning me-2" disabled>
+                  Edit (read-only)
+                </button>
+                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(job._id)}>
+                  Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <h3>Non-Technical Jobs</h3>
+      <div className="row mb-4">
+        {nonTechnicalJobs.map((job) => (
+          <div className="col-md-4 mb-3" key={job._id}>
+            <div className="card shadow-sm p-3 h-100">
+              <h5>{job.title}</h5>
+              <p>{job.description}</p>
+              <span className="badge bg-info mb-2">{job.roleType}</span>
+              <div>
+                <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(job)}>
                   Edit
                 </button>
-                <button
-                  className="btn btn-sm btn-danger"
-                  onClick={() => handleDelete(job._id)}
-                >
+                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(job._id)}>
                   Delete
                 </button>
               </div>
@@ -145,4 +166,3 @@ export default function JobManagement() {
     </div>
   );
 }
-

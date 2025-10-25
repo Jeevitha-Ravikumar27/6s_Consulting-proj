@@ -10,6 +10,7 @@ import ManageApplications from "./pages/ManageApplications";
 import ApplicationTimeline from "./pages/ApplicationTimeline";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
+import ApplyJob from "./pages/ApplyJob";
 import { AuthProvider } from "./context/AuthContext"; 
 
 function App() {
@@ -81,6 +82,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+          <Route
+  path="/apply/:id"
+  element={
+    <ProtectedRoute role="applicant">
+      <ApplyJob />
+    </ProtectedRoute>
+  }
+/>
 
           {/* Default redirect */}
           <Route path="*" element={<Navigate to="/login" />} />

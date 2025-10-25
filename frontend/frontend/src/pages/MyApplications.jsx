@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 
@@ -9,7 +10,7 @@ export default function MyApplications() {
 
   useEffect(() => {
     const fetchApplications = async () => {
-      if (!token) return; 
+      if (!token) return;
 
       try {
         const res = await axiosInstance.get("/applicant/my-applications", {
@@ -24,7 +25,7 @@ export default function MyApplications() {
     };
 
     fetchApplications();
-  }, [token]); 
+  }, [token]);
 
   if (loading) return <div className="text-center mt-5">Loading applications...</div>;
 
@@ -36,13 +37,15 @@ export default function MyApplications() {
       ) : (
         <div className="list-group">
           {applications.map((app) => (
-            <div key={app._id} className="list-group-item mb-2 shadow-sm">
+            <Link
+              key={app._id}
+              to={`/application/${app._id}/timeline`}
+              className="list-group-item mb-2 shadow-sm text-decoration-none text-dark"
+            >
               <h5>{app.jobId.title}</h5>
               <p>{app.jobId.description}</p>
               <p>Status: <strong>{app.status}</strong></p>
-              <p>Latest Comment: {app.latestComment}</p>
-              <p>Role Type: {app.roleType}</p>
-            </div>
+            </Link>
           ))}
         </div>
       )}

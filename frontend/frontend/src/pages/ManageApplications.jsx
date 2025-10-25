@@ -1,113 +1,74 @@
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 
-export default function ManageApplications() {
-  const { token } = useAuth(); 
-  const [applications, setApplications] = useState([]);
+export default function ManageApplications({ app, onClose, onUpdate }) {
+  const { token } = useAuth();
+  const [status, setStatus] = useState(app.status);
+  const [comment, setComment] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const fetchApplications = async () => {
-    if (!token) return;
+  const handleUpdate = async () => {
+    if (!status) return;
+    setLoading(true);
     try {
-      const res = await axiosInstance.get("/admin/applications", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setApplications(res.data.applications);
-    } catch (err) {
-      console.error("Failed to fetch applications:", err.response?.data?.message || err);
-    }
-  };
-
-  useEffect(() => {
-    fetchApplications();
-  }, [token]); 
-  const handleUpdate = async (id, status, comment) => {
-    if (!status) {
-      alert("Please select a status before updating.");
-      return;
-    }
-    try {
-      await axiosInstance.patch(
-        `/admin/applications/${id}`,
+      const res = await axiosInstance.patch(
+        `/admin/applications/${app._id}`,
         { status, comment },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      fetchApplications(); 
+      onUpdate(res.data.application); 
     } catch (err) {
-      console.error("Update failed:", err.response?.data?.message || err);
-      alert("Failed to update application.");
+      console.error("Failed to update application:", err.response?.data?.message || err);
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="container mt-5">
-      <h2 className="mb-4 text-primary">Manage Applications</h2>
-      <div className="card shadow-sm p-3">
-        <table className="table table-hover align-middle">
-          <thead className="table-light">
-            <tr>
-              <th>Job Title</th>
-              <th>Applicant</th>
-              <th>Role Type</th>
-              <th>Status</th>
-              <th>Update Status</th>
-              <th>Comment</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-          <tbody>
-            {applications.map((app) => (
-              <tr key={app._id}>
-                <td>{app.jobTitle}</td>
-                <td>{app.applicantName}</td>
-                <td>{app.roleType}</td>
-                <td>{app.status}</td>
+    <div className="card p-3 shadow-sm">
+      <h5>Update Application: {app.applicantName}</h5>
+      <div className="mb-2">
+        <label className="form-label">Status</label>
+        <select
+          className="form-select"
+          value={status}
+          onChange={(e) => setStatus(e.target.value)}
+          disabled={loading}
+        >
+          <option value="Under Review">Under Review</option>
+          <option value="Approved">Approved</option>
+          <option value="Rejected">Rejected</option>
+        </select>
+      </div>
 
-                {app.roleType === "non-technical" ? (
-                  <>
-                    <td>
-                      <select
-                        className="form-select"
-                        onChange={(e) => (app.newStatus = e.target.value)}
-                        defaultValue=""
-                      >
-                        <option value="">Select status</option>
-                        <option value="Under Review">Under Review</option>
-                        <option value="Approved">Approved</option>
-                        <option value="Rejected">Rejected</option>
-                      </select>
-                    </td>
-                    <td>
-                      <input
-                        type="text"
-                        className="form-control"
-                        placeholder="Add comment"
-                        onChange={(e) => (app.newComment = e.target.value)}
-                      />
-                    </td>
-                    <td>
-                      <button
-                        className="btn btn-success btn-sm"
-                        onClick={() =>
-                          handleUpdate(app._id, app.newStatus, app.newComment)
-                        }
-                      >
-                        Update
-                      </button>
-                    </td>
-                  </>
-                ) : (
-                  <td colSpan={3} className="text-muted text-center">
-                    Automated (Technical)
-                  </td>
-                )}
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      <div className="mb-2">
+        <label className="form-label">Comment (optional)</label>
+        <textarea
+          className="form-control"
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          disabled={loading}
+        />
+      </div>
+
+      <div className="d-flex justify-content-end gap-2">
+        <button
+          className="btn btn-secondary"
+          onClick={onClose}
+          disabled={loading}
+        >
+          Cancel
+        </button>
+        <button
+          className="btn btn-primary"
+          onClick={handleUpdate}
+          disabled={loading}
+        >
+          {loading ? "Updating..." : "Update"}
+        </button>
       </div>
     </div>
   );
 }
-

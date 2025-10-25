@@ -4,14 +4,14 @@ import axiosInstance from "../api/axiosInstance";
 
 export default function Register() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "applicant" });
+  const [form, setForm] = useState({ name: "", email: "", password: "", role: "applicant" }); // role fixed
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axiosInstance.post("/auth/register", form);
-      alert("Registration successful!");
-      navigate("/login"); // redirect to login page
+      const res = await axiosInstance.post("/auth/register", { ...form, role: "applicant" });
+      alert("Registration successful! Please login.");
+      navigate("/login"); 
       console.log(res.data);
     } catch (error) {
       alert(error.response?.data?.message || "Registration failed");
@@ -53,16 +53,7 @@ export default function Register() {
               required
             />
           </div>
-          <div className="mb-3">
-            <select
-              className="form-select"
-              value={form.role}
-              onChange={(e) => setForm({ ...form, role: e.target.value })}
-            >
-              <option value="applicant">Applicant</option>
-              <option value="admin">Admin</option>
-            </select>
-          </div>
+
           <button type="submit" className="btn btn-primary w-100">
             Register
           </button>
@@ -74,5 +65,6 @@ export default function Register() {
     </div>
   );
 }
+
 
 

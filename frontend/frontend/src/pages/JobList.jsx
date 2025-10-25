@@ -1,5 +1,6 @@
 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 
@@ -7,6 +8,7 @@ export default function Jobs() {
   const { token } = useAuth(); 
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!token) return;
@@ -25,21 +27,10 @@ export default function Jobs() {
     };
 
     fetchJobs();
-  }, [token]); 
-  const handleApply = async (jobId) => {
-    if (!token) return alert("You must be logged in to apply");
+  }, [token]);
 
-    try {
-      const res = await axiosInstance.post(
-        "/applications",
-        { jobId },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      alert("Application submitted!");
-      console.log(res.data);
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to apply");
-    }
+  const handleApply = (jobId) => {
+    navigate(`/apply/${jobId}`);
   };
 
   if (loading) return <p className="text-center mt-5">Loading jobs...</p>;
@@ -73,4 +64,5 @@ export default function Jobs() {
     </div>
   );
 }
+
 

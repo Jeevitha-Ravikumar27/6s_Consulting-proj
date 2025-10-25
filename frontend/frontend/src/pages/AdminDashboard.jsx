@@ -1,5 +1,6 @@
 
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
 import { FaClipboardList, FaLaptopCode, FaUserTie } from "react-icons/fa";
 import { Bar, Pie } from "react-chartjs-2";
@@ -12,21 +13,23 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { useAuth } from "../context/AuthContext"; 
+import { useAuth } from "../context/AuthContext";
+import ManageApplications from "./ManageApplications";
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
 
 export default function AdminDashboard() {
-  const { token } = useAuth(); 
+  const { token } = useAuth();
   const [stats, setStats] = useState({
     totalJobs: 0,
     technicalApps: 0,
     nonTechnicalApps: 0,
   });
   const [applications, setApplications] = useState([]);
+  const [editingAppId, setEditingAppId] = useState(null);
 
   useEffect(() => {
-    if (!token) return; 
+    if (!token) return;
 
     const fetchDashboardData = async () => {
       try {
@@ -75,6 +78,13 @@ export default function AdminDashboard() {
     ],
   };
 
+  const handleUpdate = (updatedApp) => {
+    setApplications((prev) =>
+      prev.map((app) => (app._id === updatedApp._id ? updatedApp : app))
+    );
+    setEditingAppId(null);
+  };
+
   return (
     <div className="container mt-5">
       <h2 className="mb-4 text-primary fw-bold">Admin Dashboard</h2>
@@ -121,7 +131,10 @@ export default function AdminDashboard() {
         <div className="col-md-6">
           <div className="card shadow-sm p-3">
             <h5 className="text-center mb-3">Applications by Role Type</h5>
-            <Bar data={roleTypeData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
+            <Bar
+              data={roleTypeData}
+              options={{ responsive: true, plugins: { legend: { display: false } } }}
+            />
           </div>
         </div>
         <div className="col-md-6">
@@ -144,30 +157,83 @@ export default function AdminDashboard() {
                 <th>Role Type</th>
                 <th>Status</th>
                 <th>Last Updated</th>
+                <th>Action</th>
               </tr>
             </thead>
             <tbody>
               {applications.map((app) => (
-                <tr key={app._id}>
-                  <td>{app.jobTitle}</td>
-                  <td>{app.applicantName}</td>
-                  <td>{app.roleType}</td>
-                  <td>
-                    <span className={`badge ${
-                      app.status === "Approved" ? "bg-success" :
-                      app.status === "Rejected" ? "bg-danger" :
-                      app.status === "Under Review" ? "bg-warning" : "bg-secondary"
-                    }`}>
-                      {app.status}
-                    </span>
-                  </td>
-                  <td>{new Date(app.updatedAt).toLocaleString()}</td>
-                </tr>
+                <React.Fragment key={app._id}>
+                  <tr>
+                    <td>{app.jobTitle}</td>
+                    <td>{app.applicantName}</td>
+                    <td>{app.roleType}</td>
+                    <td>
+                      <span
+                        className={`badge ${
+                          app.status === "Approved"
+                            ? "bg-success"
+                            : app.status === "Rejected"
+                            ? "bg-danger"
+                            : app.status === "Under Review"
+                            ? "bg-warning"
+                            : "bg-secondary"
+                        }`}
+                      >
+                        {app.status}
+                      </span>
+                    </td>
+                    <td>{new Date(app.updatedAt).toLocaleString()}</td>
+                    <td>
+                      {app.roleType === "non-technical" ? (
+                        <button
+                          className="btn btn-sm btn-primary"
+                          onClick={() => setEditingAppId(app._id)}
+                        >
+                          Update
+                        </button>
+                      ) : (
+                        <span className="text-muted">—</span>
+                      )}
+                    </td>
+                  </tr>
+                  {editingAppId === app._id && (
+                    <tr>
+                      <td colSpan={6}>
+                        <ManageApplications
+                          app={app}
+                          onClose={() => setEditingAppId(null)}
+                          onUpdate={handleUpdate}
+                        />
+                      </td>
+                    </tr>
+                  )}
+                </React.Fragment>
               ))}
             </tbody>
           </table>
         </div>
       </div>
+
+      {/* Floating Create Job Button */}
+      <Link
+        to="/admin/job-management"
+        className="btn btn-primary position-fixed"
+        style={{
+          bottom: "20px",
+          right: "20px",
+          borderRadius: "50%",
+          width: "60px",
+          height: "60px",
+          fontSize: "24px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+        title="Create Job"
+      >
+        +
+      </Link>
     </div>
   );
 }
+

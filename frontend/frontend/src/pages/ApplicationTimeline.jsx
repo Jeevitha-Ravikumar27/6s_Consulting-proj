@@ -1,77 +1,77 @@
 
-import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { useAuth } from "../context/AuthContext";
 
 export default function ApplicationTimeline() {
   const { id } = useParams();
-  const { token } = useAuth(); 
-  const [logs, setLogs] = useState([]);
+  const { token } = useAuth();
+  const [application, setApplication] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!token) return;
-
-    const fetchLogs = async () => {
+    const fetchApplication = async () => {
       try {
-        const res = await axiosInstance.get(`/applications/${id}/logs`, {
+        const res = await axiosInstance.get(`/applicant/application/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        setLogs(res.data.logs);
+        setApplication(res.data);
       } catch (err) {
-        console.error("Failed to fetch logs:", err.response?.data?.message || err);
+        console.error(err);
+      } finally {
+        setLoading(false);
       }
     };
-
-    fetchLogs();
-  }, [id, token]); 
+    fetchApplication();
+  }, [id, token]);
 
   const statusColor = (status) => {
     switch (status) {
       case "Applied":
-        return "bg-secondary";
+        return "bg-secondary text-white";
       case "Under Review":
-        return "bg-info";
+        return "bg-info text-dark";
       case "Approved":
-        return "bg-success";
+        return "bg-success text-white";
       case "Rejected":
-        return "bg-danger";
+        return "bg-danger text-white";
       default:
-        return "bg-light";
+        return "bg-light text-dark";
     }
   };
 
+  if (loading) return <div className="text-center mt-5">Loading application details...</div>;
+  if (!application) return <div className="text-center mt-5">Application not found</div>;
+
   return (
     <div className="container mt-5">
-      <h2 className="mb-4 text-primary">Application Timeline</h2>
-      <div className="timeline">
-        {logs.length === 0 ? (
-          <p className="text-muted">No updates yet.</p>
-        ) : (
-          logs.map((log, index) => (
-            <div
-              key={index}
-              className={`card mb-3 shadow-sm ${statusColor(log.status)}`}
-            >
-              <div className="card-body">
-                <h5 className="card-title">
-                  Status: <strong>{log.status}</strong>
-                </h5>
-                <p className="mb-1">
-                  <strong>Comment:</strong> {log.comment || "N/A"}
-                </p>
-                <p className="mb-1">
-                  <strong>Updated By:</strong> {log.updatedBy}
-                </p>
-                <p className="text-muted mb-0">
-                  <strong>Timestamp:</strong>{" "}
-                  {new Date(log.timestamp).toLocaleString()}
-                </p>
-              </div>
+      <h2 className="mb-3">{application.jobId.title}</h2>
+      <p>{application.jobId.description}</p>
+      <p>
+        <strong>Status:</strong>{" "}
+        <span className={`badge ${statusColor(application.status)}`}>
+          {application.status}
+        </span>
+      </p>
+      <p><strong>Role Type:</strong> {application.roleType}</p>
+      <p><strong>Latest Comment:</strong> {application.latestComment || "No comments yet"}</p>
+      <p><strong>Posted On:</strong> {new Date(application.jobId.createdAt).toLocaleDateString()}</p>
+      <p><strong>Last Updated:</strong> {new Date(application.updatedAt).toLocaleString()}</p>
+
+      {application.timeline && application.timeline.length > 0 && (
+        <div className="mt-4">
+          <h5>Application Timeline:</h5>
+          {application.timeline.map((event, index) => (
+            <div key={index} className={`card mb-2 shadow-sm p-3 ${statusColor(event.status)}`}>
+              <p className="mb-1"><strong>Status:</strong> {event.status}</p>
+              <p className="mb-1"><strong>Comment:</strong> {event.comment || "N/A"}</p>
+              <p className="mb-0 text-muted"><strong>Date:</strong> {new Date(event.date).toLocaleString()}</p>
             </div>
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
+

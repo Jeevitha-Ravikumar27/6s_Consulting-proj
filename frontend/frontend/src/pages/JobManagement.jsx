@@ -1,26 +1,29 @@
-// src/pages/JobManagement.jsx
+
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
+import { useAuth } from "../context/AuthContext";
 
 export default function JobManagement() {
+  const { token } = useAuth(); 
   const [jobs, setJobs] = useState([]);
   const [form, setForm] = useState({ title: "", description: "", roleType: "technical", id: "" });
   const [loading, setLoading] = useState(false);
 
   const fetchJobs = async () => {
+    if (!token) return;
     try {
       const res = await axiosInstance.get("/admin/jobs", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setJobs(res.data.jobs);
     } catch (err) {
-      console.error(err);
+      console.error("Failed to fetch jobs:", err.response?.data?.message || err);
     }
   };
 
   useEffect(() => {
     fetchJobs();
-  }, []);
+  }, [token]); 
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -28,17 +31,17 @@ export default function JobManagement() {
     try {
       if (form.id) {
         await axiosInstance.put(`/admin/jobs/${form.id}`, form, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: { Authorization: `Bearer ${token}` },
         });
       } else {
         await axiosInstance.post("/admin/jobs", form, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: { Authorization: `Bearer ${token}` },
         });
       }
       setForm({ title: "", description: "", roleType: "technical", id: "" });
       fetchJobs();
     } catch (err) {
-      console.error(err);
+      console.error("Action failed:", err.response?.data?.message || err);
       alert("Action failed");
     } finally {
       setLoading(false);
@@ -54,11 +57,11 @@ export default function JobManagement() {
     if (!window.confirm("Are you sure you want to delete this job?")) return;
     try {
       await axiosInstance.delete(`/admin/jobs/${id}`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       fetchJobs();
     } catch (err) {
-      console.error(err);
+      console.error("Delete failed:", err.response?.data?.message || err);
       alert("Delete failed");
     }
   };
@@ -142,3 +145,4 @@ export default function JobManagement() {
     </div>
   );
 }
+

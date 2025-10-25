@@ -1,4 +1,4 @@
-/* Global body styles */
+
 body {
   background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
   min-height: 100vh;
@@ -8,7 +8,7 @@ body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Card styles */
+
 .card {
   border-radius: 15px;
   box-shadow: 0 8px 20px rgba(0,0,0,0.2);
@@ -18,7 +18,7 @@ body {
   max-width: 450px;
 }
 
-/* Headings */
+
 h2 {
   font-weight: 600;
   color: #343a40;
@@ -26,14 +26,14 @@ h2 {
   margin-bottom: 25px;
 }
 
-/* Input fields */
+
 .form-control {
   border-radius: 8px;
   height: 45px;
   font-size: 16px;
 }
 
-/* Buttons */
+
 .btn-primary, .btn-success {
   border-radius: 8px;
   height: 45px;
@@ -41,14 +41,14 @@ h2 {
   font-size: 16px;
 }
 
-/* Subtle hover effect */
+
 .btn-primary:hover, .btn-success:hover {
   opacity: 0.9;
   transform: scale(1.02);
   transition: all 0.2s ease-in-out;
 }
 
-/* Select field */
+
 .form-select {
   border-radius: 8px;
   height: 45px;

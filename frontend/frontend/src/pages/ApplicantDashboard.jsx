@@ -1,9 +1,11 @@
-// src/pages/ApplicantDashboard.jsx
+
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
+import { useAuth } from "../context/AuthContext";
 
 export default function ApplicantDashboard() {
+  const { token } = useAuth(); 
   const [applications, setApplications] = useState([]);
   const [stats, setStats] = useState({
     totalApplied: 0,
@@ -12,15 +14,14 @@ export default function ApplicantDashboard() {
     underReview: 0,
   });
 
-  // Fetch user's applications
   const fetchApplications = async () => {
+    if (!token) return; 
     try {
       const res = await axiosInstance.get("/applications/my", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setApplications(res.data.applications);
 
-      // Calculate stats
       const totalApplied = res.data.applications.length;
       const approved = res.data.applications.filter(a => a.status === "Approved").length;
       const rejected = res.data.applications.filter(a => a.status === "Rejected").length;
@@ -28,13 +29,13 @@ export default function ApplicantDashboard() {
 
       setStats({ totalApplied, approved, rejected, underReview });
     } catch (err) {
-      console.error(err);
+      console.error("Failed to fetch applications:", err.response?.data?.message || err);
     }
   };
 
   useEffect(() => {
     fetchApplications();
-  }, []);
+  }, [token]); 
 
   const getBadgeClass = (status) => {
     return status === "Approved"

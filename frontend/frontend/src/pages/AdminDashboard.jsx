@@ -1,4 +1,4 @@
-// src/pages/AdminDashboard.jsx
+
 import React, { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
 import { FaClipboardList, FaLaptopCode, FaUserTie } from "react-icons/fa";
@@ -12,10 +12,12 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
+import { useAuth } from "../context/AuthContext"; 
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
 
 export default function AdminDashboard() {
+  const { token } = useAuth(); 
   const [stats, setStats] = useState({
     totalJobs: 0,
     technicalApps: 0,
@@ -24,27 +26,29 @@ export default function AdminDashboard() {
   const [applications, setApplications] = useState([]);
 
   useEffect(() => {
+    if (!token) return; 
+
     const fetchDashboardData = async () => {
       try {
         const resStats = await axiosInstance.get("/admin/dashboard", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setStats(resStats.data.stats);
 
         const resApps = await axiosInstance.get("/admin/applications", {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setApplications(resApps.data.applications);
       } catch (err) {
-        console.error(err);
+        console.error("Failed to fetch admin dashboard:", err.response?.data?.message || err);
       }
     };
+
     fetchDashboardData();
-  }, []);
+  }, [token]);
 
   const cardStyle = (bgColor) => `card text-white mb-3 shadow-sm ${bgColor}`;
 
-  // Prepare charts
   const roleTypeData = {
     labels: ["Technical", "Non-Technical"],
     datasets: [
@@ -88,7 +92,6 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-
         <div className="col">
           <div className={cardStyle("bg-success")}>
             <div className="card-body d-flex align-items-center justify-content-between">
@@ -100,7 +103,6 @@ export default function AdminDashboard() {
             </div>
           </div>
         </div>
-
         <div className="col">
           <div className={cardStyle("bg-warning")}>
             <div className="card-body d-flex align-items-center justify-content-between">
@@ -114,7 +116,7 @@ export default function AdminDashboard() {
         </div>
       </div>
 
-      {/* Charts Section */}
+      {/* Charts */}
       <div className="row mb-5">
         <div className="col-md-6">
           <div className="card shadow-sm p-3">
@@ -122,7 +124,6 @@ export default function AdminDashboard() {
             <Bar data={roleTypeData} options={{ responsive: true, plugins: { legend: { display: false } } }} />
           </div>
         </div>
-
         <div className="col-md-6">
           <div className="card shadow-sm p-3">
             <h5 className="text-center mb-3">Applications Status Distribution</h5>
@@ -152,14 +153,14 @@ export default function AdminDashboard() {
                   <td>{app.applicantName}</td>
                   <td>{app.roleType}</td>
                   <td>
-        <span className={`badge ${
-          app.status === "Approved" ? "bg-success" :
-          app.status === "Rejected" ? "bg-danger" :
-          app.status === "Under Review" ? "bg-warning" : "bg-secondary"
-        }`}>
-          {app.status}
-        </span>
-        </td>
+                    <span className={`badge ${
+                      app.status === "Approved" ? "bg-success" :
+                      app.status === "Rejected" ? "bg-danger" :
+                      app.status === "Under Review" ? "bg-warning" : "bg-secondary"
+                    }`}>
+                      {app.status}
+                    </span>
+                  </td>
                   <td>{new Date(app.updatedAt).toLocaleString()}</td>
                 </tr>
               ))}

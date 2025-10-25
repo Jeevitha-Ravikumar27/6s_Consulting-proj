@@ -1,25 +1,30 @@
-// src/pages/ApplicationTimeline.jsx
+
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axiosInstance from "../api/axiosInstance";
+import { useAuth } from "../context/AuthContext";
 
 export default function ApplicationTimeline() {
   const { id } = useParams();
+  const { token } = useAuth(); 
   const [logs, setLogs] = useState([]);
 
   useEffect(() => {
+    if (!token) return;
+
     const fetchLogs = async () => {
       try {
         const res = await axiosInstance.get(`/applications/${id}/logs`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+          headers: { Authorization: `Bearer ${token}` },
         });
         setLogs(res.data.logs);
       } catch (err) {
-        console.error(err);
+        console.error("Failed to fetch logs:", err.response?.data?.message || err);
       }
     };
+
     fetchLogs();
-  }, [id]);
+  }, [id, token]); 
 
   const statusColor = (status) => {
     switch (status) {

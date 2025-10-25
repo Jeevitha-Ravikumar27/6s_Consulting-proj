@@ -1,13 +1,16 @@
-// src/pages/Jobs.jsx
+
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
+import { useAuth } from "../context/AuthContext";
 
 export default function Jobs() {
+  const { token } = useAuth(); 
   const [jobs, setJobs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const token = localStorage.getItem("token"); // JWT token
 
   useEffect(() => {
+    if (!token) return;
+
     const fetchJobs = async () => {
       try {
         const res = await axiosInstance.get("/jobs", {
@@ -15,16 +18,17 @@ export default function Jobs() {
         });
         setJobs(res.data.jobs);
       } catch (err) {
-        console.error(err);
+        console.error("Failed to fetch jobs:", err.response?.data?.message || err);
       } finally {
         setLoading(false);
       }
     };
 
     fetchJobs();
-  }, []);
-
+  }, [token]); 
   const handleApply = async (jobId) => {
+    if (!token) return alert("You must be logged in to apply");
+
     try {
       const res = await axiosInstance.post(
         "/applications",
@@ -45,7 +49,7 @@ export default function Jobs() {
       <h2 className="mb-4 text-center">Available Jobs</h2>
       <div className="row">
         {jobs.length === 0 ? (
-          <p>No jobs available currently.</p>
+          <p className="text-center">No jobs available currently.</p>
         ) : (
           jobs.map((job) => (
             <div key={job._id} className="col-md-6 mb-4">
@@ -69,3 +73,4 @@ export default function Jobs() {
     </div>
   );
 }
+

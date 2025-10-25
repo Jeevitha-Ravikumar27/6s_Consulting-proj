@@ -1,39 +1,41 @@
-// src/pages/ManageApplications.jsx
+
 import React, { useState, useEffect } from "react";
 import axiosInstance from "../api/axiosInstance";
+import { useAuth } from "../context/AuthContext";
 
 export default function ManageApplications() {
+  const { token } = useAuth(); 
   const [applications, setApplications] = useState([]);
 
   const fetchApplications = async () => {
+    if (!token) return;
     try {
       const res = await axiosInstance.get("/admin/applications", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { Authorization: `Bearer ${token}` },
       });
       setApplications(res.data.applications);
     } catch (err) {
-      console.error(err);
+      console.error("Failed to fetch applications:", err.response?.data?.message || err);
     }
   };
 
   useEffect(() => {
     fetchApplications();
-  }, []);
-
+  }, [token]); 
   const handleUpdate = async (id, status, comment) => {
+    if (!status) {
+      alert("Please select a status before updating.");
+      return;
+    }
     try {
-      if (!status) {
-        alert("Please select a status before updating.");
-        return;
-      }
       await axiosInstance.patch(
         `/admin/applications/${id}`,
         { status, comment },
-        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
+        { headers: { Authorization: `Bearer ${token}` } }
       );
-      fetchApplications();
+      fetchApplications(); 
     } catch (err) {
-      console.error(err);
+      console.error("Update failed:", err.response?.data?.message || err);
       alert("Failed to update application.");
     }
   };
@@ -96,11 +98,9 @@ export default function ManageApplications() {
                     </td>
                   </>
                 ) : (
-                  <>
-                    <td colSpan={3} className="text-muted text-center">
-                      Automated (Technical)
-                    </td>
-                  </>
+                  <td colSpan={3} className="text-muted text-center">
+                    Automated (Technical)
+                  </td>
                 )}
               </tr>
             ))}
@@ -110,3 +110,4 @@ export default function ManageApplications() {
     </div>
   );
 }
+

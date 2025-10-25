@@ -10,74 +10,84 @@ import ManageApplications from "./pages/ManageApplications";
 import ApplicationTimeline from "./pages/ApplicationTimeline";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Navbar from "./components/Navbar";
+import { AuthProvider } from "./context/AuthContext"; 
 
 function App() {
   return (
-    <Router>
+    <AuthProvider>
+      <Router>
         <Navbar />
-      <Routes>
-        {/* Public */}
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
+        <Routes>
+          {/* Public */}
+          <Route path="/register" element={<Register />} />
+          <Route path="/login" element={<Login />} />
 
-        {/* Applicant-only */}
-        <Route
-          path="/jobs"
-          element={
-            <ProtectedRoute role="applicant">
-              <Jobs />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/my-applications"
-          element={
-            <ProtectedRoute role="applicant">
-              <MyApplications />
-            </ProtectedRoute>
-          }
-        />
+          {/* Applicant-only */}
+          <Route
+            path="/jobs"
+            element={
+              <ProtectedRoute role="applicant">
+                <Jobs />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/my-applications"
+            element={
+              <ProtectedRoute role="applicant">
+                <MyApplications />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/application/:id/timeline"
+            element={
+              <ProtectedRoute role="applicant">
+                <ApplicationTimeline />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard"
+            element={
+              <ProtectedRoute role="applicant">
+                <ApplicantDashboard />
+              </ProtectedRoute>
+            }
+          />
 
-        <Route path="/application/:id/timeline" element={
-          <ProtectedRoute role="applicant">
-            <ApplicationTimeline />
-          </ProtectedRoute>
-        } />
+          {/* Admin-only */}
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute role="admin">
+                <AdminDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/jobs"
+            element={
+              <ProtectedRoute role="admin">
+                <JobManagement />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/applications"
+            element={
+              <ProtectedRoute role="admin">
+                <ManageApplications />
+              </ProtectedRoute>
+            }
+          />
 
-        {/* Applicant-only */}
-        <Route
-          path="/dashboard"
-          element={
-            <ProtectedRoute role="applicant">
-              <ApplicantDashboard />  
-            </ProtectedRoute>
-          }
-        />
-
-        {/* Admin Routes */}
-        <Route path="/admin/dashboard" element={
-          <ProtectedRoute role="admin">
-            <AdminDashboard />
-          </ProtectedRoute>
-        } />
-
-        <Route path="/admin/jobs" element={
-          <ProtectedRoute role="admin">
-            <JobManagement />
-          </ProtectedRoute>
-        } />
-        <Route path="/admin/applications" element={
-          <ProtectedRoute role="admin">
-            <ManageApplications />
-          </ProtectedRoute>
-        } />
-
-        {/* Default redirect */}
-        <Route path="*" element={<Navigate to="/login" />} />
-      </Routes>
-    </Router>
+          {/* Default redirect */}
+          <Route path="*" element={<Navigate to="/login" />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
   );
 }
 
 export default App;
-

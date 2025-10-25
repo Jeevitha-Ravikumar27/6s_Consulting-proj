@@ -1,14 +1,17 @@
 import { useEffect, useState } from "react";
 import axiosInstance from "../api/axiosInstance";
+import { useAuth } from "../context/AuthContext";
 
 export default function MyApplications() {
+  const { token } = useAuth(); 
   const [applications, setApplications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchApplications = async () => {
+      if (!token) return; 
+
       try {
-        const token = localStorage.getItem("token"); // JWT from login
         const res = await axiosInstance.get("/applicant/my-applications", {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -21,7 +24,7 @@ export default function MyApplications() {
     };
 
     fetchApplications();
-  }, []);
+  }, [token]); 
 
   if (loading) return <div className="text-center mt-5">Loading applications...</div>;
 

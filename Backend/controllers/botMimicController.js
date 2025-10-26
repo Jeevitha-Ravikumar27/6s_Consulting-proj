@@ -26,8 +26,8 @@ const loginBotMimic = asyncHandler(async (req, res) => {
     // Send cookie
     res
       .cookie("jwt", token, {
-        httpOnly: true,
-        sameSite: "strict",
+        
+        sameSite: "None",
         maxAge: 24 * 60 * 60 * 1000,
       })
       .status(200)
@@ -38,10 +38,10 @@ const loginBotMimic = asyncHandler(async (req, res) => {
   }
 });
 
-// Bot Mimic Logout
+
 const logoutBotMimic = asyncHandler(async (req, res) => {
   res
-    .cookie("jwt", "", { httpOnly: true, expires: new Date(0) })
+    .cookie("jwt", "", { expires: new Date(0) })
     .status(200)
     .json({ message: "Bot Mimic logged out successfully" });
 });
@@ -51,7 +51,7 @@ const getTechnicalApplications = asyncHandler(async (req, res) => {
     .populate("applicantId", "name email")
     .populate("jobId", "title roleType");
 
-  // Filter only technical roles
+  
   const technicalApps = applications.filter(
     (app) => app.jobId?.roleType?.toLowerCase() === "technical"
   );

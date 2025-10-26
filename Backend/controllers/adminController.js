@@ -27,10 +27,9 @@ const adminLogin = asyncHandler((req, res) => {
     expiresIn: "7d",
   });
 
-  // Set JWT in cookie
+  
   res.cookie("jwt", token, {
-    httpOnly: true,
-    sameSite: "strict",
+    sameSite: "None",
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
@@ -43,16 +42,16 @@ const adminLogin = asyncHandler((req, res) => {
   res.status(200).json(admin);
 });
 
-// Admin Logout
+
 const adminLogout = asyncHandler(async (req, res) => {
   res.clearCookie("jwt", {
-    httpOnly: true,
-    sameSite: "strict",
+    
+    sameSite: "None",
   });
   res.status(200).json({ message: "Admin logged out" });
 });
 
-// Create Job Posting
+
 
 const createJob = asyncHandler(async (req, res) => {
   try {
@@ -76,7 +75,7 @@ const createJob = asyncHandler(async (req, res) => {
   }
 });
 
-// Get all applications
+
 const getAllApplications = asyncHandler(async (req, res) => {
   const applications = await Application.find()
     .populate("applicantId", "name email")
@@ -85,12 +84,12 @@ const getAllApplications = asyncHandler(async (req, res) => {
   res.status(200).json(applications);
 });
 
-// Update application status and add comments for non-technical roles
+
 const updateApplicationStatus = asyncHandler(async (req, res) => {
   const applicationId = req.params.id;
   const { status, comment } = req.body;
 
-  // Validate status
+  
   const validStatuses = [
     "Applied",
     "Reviewed",
@@ -104,7 +103,7 @@ const updateApplicationStatus = asyncHandler(async (req, res) => {
     throw new Error("Invalid status value");
   }
 
-  // Find application
+  
   const application = await Application.findById(applicationId);
   if (!application) {
     res.status(404);

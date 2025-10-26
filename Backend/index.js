@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(
   cors({
-    origin: "https://6s-consulting-proj-frontnd.vercel.app",
+    origin: "https://sixs-consulting-proj-3.onrender.com",
     credentials: true,
   })
 );

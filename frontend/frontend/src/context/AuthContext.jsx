@@ -95,6 +95,15 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const allApplications = async () => {
+    try {
+      const res = await API.get("/admin/applications");
+      setApplications(res.data);
+    } catch (error) {
+      console.error("Failed to fetch all applications:", error);
+    }
+  };
+
   const value = {
     user,
     userLoading,
@@ -105,9 +114,11 @@ export const AuthProvider = ({ children }) => {
     applications,
     myApplications,
     adminLogout,
+    allApplications,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContext;
+

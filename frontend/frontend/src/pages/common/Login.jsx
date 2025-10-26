@@ -2,14 +2,21 @@ import { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import AuthContext from "../../context/AuthContext";
 import { toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Login() {
   const navigate = useNavigate();
-  const { loginUser, adminLogin, botLogin, userLoading } =
-    useContext(AuthContext);
+  const { loginUser, adminLogin, botLogin, user } = useContext(AuthContext);
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [role, setRole] = useState("applicant"); // default role
+
+  if (user) {
+    // Redirect logged in users based on their role
+    if (user.role === "applicant") navigate("/dashboard");
+    else if (user.role === "admin") navigate("/admin/dashboard");
+    else if (user.role === "bot") navigate("/bot");
+  }
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -86,4 +93,3 @@ export default function Login() {
     </div>
   );
 }
-

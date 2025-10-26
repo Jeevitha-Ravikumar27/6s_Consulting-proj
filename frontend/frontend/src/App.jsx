@@ -10,7 +10,6 @@ import Jobs from "./pages/common/JobList.jsx";
 import MyApplications from "./pages/applicant/MyApplications.jsx";
 import ApplicantDashboard from "./pages/applicant/ApplicantDashboard.jsx";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
-import JobManagement from "./pages/admin/JobManagement.jsx";
 import ManageApplications from "./pages/admin/ManageApplications.jsx";
 import ApplicationTimeline from "./pages/applicant/ApplicationTimeline.jsx";
 import ProtectedRoute from "./components/ProtectedRoute";
@@ -18,6 +17,7 @@ import Navbar from "./components/Navbar";
 import ApplyJob from "./pages/applicant/ApplyJob.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import ActivityLog from "./pages/admin/ActivityLog.jsx";
 
 function App() {
   return (
@@ -29,11 +29,10 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
 
-        {/* Applicant-only */}
         <Route
           path="/jobs"
           element={
-            <ProtectedRoute role={["applicant"]}>
+            <ProtectedRoute role={["applicant", "admin"]}>
               <Jobs />
             </ProtectedRoute>
           }
@@ -73,10 +72,10 @@ function App() {
           }
         />
         <Route
-          path="/admin/jobs"
+          path="/admin/activity-log/:applicationId"
           element={
             <ProtectedRoute role={["admin"]}>
-              <JobManagement />
+              <ActivityLog />
             </ProtectedRoute>
           }
         />
@@ -108,3 +107,4 @@ function App() {
 }
 
 export default App;
+

@@ -102,12 +102,12 @@ export default function ApplicantDashboard() {
       </div>
 
       {/* Applications Table */}
-      <div className="row justify-content-center mx-auto">
-        <div className="col-12 col-md-10 col-lg-9">
-          <div className="card shadow-sm p-3 rounded-4">
+      <div className="row justify-content-center">
+  <div className="col-12 col-md-11 col-lg-10">
+    <div className="card shadow-sm p-4 rounded-4 mx-auto" style={{ maxWidth: "1000px" }}>
             <h4 className="mb-3 text-center text-secondary">My Applications</h4>
             <div className="table-responsive">
-              <table className="table table-hover align-middle mb-0 w-1000">
+              <table className="table table-hover align-middle mb-0">
                 <thead className="table-light">
                   <tr>
                     <th>Job Title</th>
@@ -128,14 +128,13 @@ export default function ApplicantDashboard() {
                         <td>{app.jobId.title}</td>
                         <td className="text-capitalize">{app.roleType}</td>
                         <td>
-                          <span
-                            className={`badge ${getBadgeClass(
-                              app.status
-                            )} py-2 px-3 rounded-pill`}
-                          >
-                            {app.status}
-                          </span>
-                        </td>
+  <span
+    className={`status-badge ${getBadgeClass(app.status)}`}
+  >
+    {app.status}
+  </span>
+</td>
+
                         <td>{new Date(app.updatedAt).toLocaleString()}</td>
                         <td>{app.latestComment || "N/A"}</td>
                       </tr>

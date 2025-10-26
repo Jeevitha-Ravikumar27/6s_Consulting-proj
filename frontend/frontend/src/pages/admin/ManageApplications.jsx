@@ -1,31 +1,33 @@
 
 import React, { useState } from "react";
+import axiosInstance from "../../api/axiosInstance";
+import { toast } from "react-toastify";
 
 export default function ManageApplications({ app, onClose, onUpdate }) {
-  const { token } = useAuth();
   const [status, setStatus] = useState(app.status);
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // const handleUpdate = async () => {
-  //   if (!status) return;
-  //   setLoading(true);
-  //   try {
-  //     const res = await axiosInstance.patch(
-  //       `/admin/applications/${app._id}`,
-  //       { status, comment },
-  //       { headers: { Authorization: `Bearer ${token}` } }
-  //     );
-  //     onUpdate(res.data.application);
-  //   } catch (err) {
-  //     console.error(
-  //       "Failed to update application:",
-  //       err.response?.data?.message || err
-  //     );
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
+  const handleUpdate = async () => {
+    if (!status) return;
+    setLoading(true);
+    try {
+      const res = await axiosInstance.put(`/admin/application/${app._id}`, {
+        status,
+        comment,
+      });
+      onUpdate(res.data);
+      toast.success("Application updated successfully");
+      onClose();
+    } catch (err) {
+      console.error(
+        "Failed to update application:",
+        err.response?.data?.message || err
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="card p-3 shadow-sm">
@@ -38,14 +40,16 @@ export default function ManageApplications({ app, onClose, onUpdate }) {
           onChange={(e) => setStatus(e.target.value)}
           disabled={loading}
         >
-          <option value="Under Review">Under Review</option>
-          <option value="Approved">Approved</option>
+          <option value="Reviewed">Reviewed</option>
+          <option value="Interview">Interview</option>
+          <option value="Offer">Offer</option>
+          <option value="Hired">Hired</option>
           <option value="Rejected">Rejected</option>
         </select>
       </div>
 
       <div className="mb-2">
-        <label className="form-label">Comment (optional)</label>
+        <label className="form-label">Comment</label>
         <textarea
           className="form-control"
           value={comment}

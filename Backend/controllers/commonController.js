@@ -1,4 +1,6 @@
 import Job from "../models/JobPostingSchema.js";
+import User from "../models/UserSchema.js";
+import asyncHandler from "../middlewares/asycHandler.js";
 
 const getJobs = async (req, res) => {
   try {
@@ -18,5 +20,16 @@ const getJobById = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const getCurrentUser = asyncHandler(async (req, res) => {
+  const userId = req.cookies.jwt; // or decode JWT from cookie
+  if (!userId) {
+    res.status(401);
+    throw new Error("Not authenticated");
+  }
+
+  const user = await User.findById(userId).select("-password");
+  res.json(user);
+});
 
 export { getJobs, getJobById };

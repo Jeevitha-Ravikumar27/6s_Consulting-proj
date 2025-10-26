@@ -40,7 +40,7 @@ const createUser = asyncHandler(async (req, res) => {
       role: newUser.role,
     });
   } catch (error) {
-    res.status(400);
+    res.status(400).json({ message: error.message });
     throw new Error("Invalid user data");
   }
 });
@@ -67,6 +67,8 @@ const loginUser = asyncHandler(async (req, res) => {
       return;
     }
   }
+
+  res.status(400).json({ message: "Invalid email or password" });
 });
 
 const logoutUser = async (req, res) => {
@@ -133,4 +135,42 @@ const getMyApplications = asyncHandler(async (req, res) => {
   res.status(200).json(applications);
 });
 
-export { createUser, loginUser, logoutUser, applyJob, getMyApplications };
+const getApplicationStats = async (req, res) => {
+  try {
+    const applications = await Application.find();
+
+    const underReviewStatuses = ["Applied", "Reviewed", "Interview", "Offer"];
+
+    let total = 0;
+    let approved = 0;
+    let rejected = 0;
+    let underReview = 0;
+
+    applications.forEach((app) => {
+      total += 1;
+
+      if (app.status === "Approved" || app.status === "Hired") approved += 1;
+      else if (app.status === "Rejected") rejected += 1;
+      else if (underReviewStatuses.includes(app.status)) underReview += 1;
+    });
+
+    return res.status(200).json({
+      total,
+      approved,
+      rejected,
+      underReview,
+    });
+  } catch (error) {
+    console.error("Error fetching application stats:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};
+
+export {
+  createUser,
+  loginUser,
+  logoutUser,
+  applyJob,
+  getMyApplications,
+  getApplicationStats,
+};

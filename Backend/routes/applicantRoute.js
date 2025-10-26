@@ -2,6 +2,7 @@ import express from "express";
 import {
   applyJob,
   createUser,
+  getApplicationStats,
   getMyApplications,
   loginUser,
   logoutUser,
@@ -20,3 +21,5 @@ router.post("/apply", authenticate, applyJob);
 //get logged in user's applications
 router.get("/my-applications", authenticate, getMyApplications);
 export default router;
+
+router.get("/application-stats", authenticate, getApplicationStats);

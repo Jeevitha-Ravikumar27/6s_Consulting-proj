@@ -1,5 +1,9 @@
 import express from "express";
-import { getJobById, getJobs } from "../controllers/commonController.js";
+import {
+  getCurrentUser,
+  getJobById,
+  getJobs,
+} from "../controllers/commonController.js";
 
 const router = express.Router();
 
@@ -8,5 +12,7 @@ router.get("/jobs", getJobs);
 
 // Get job posting by ID
 router.get("/jobs/:id", getJobById);
+
+router.get("/current-user", getCurrentUser);
 
 export default router;

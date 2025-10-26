@@ -1,7 +1,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import axiosInstance from "../api/axiosInstance";
+import axiosInstance from "../../api/axiosInstance";
 import { FaClipboardList, FaLaptopCode, FaUserTie } from "react-icons/fa";
 import { Bar, Pie } from "react-chartjs-2";
 import {
@@ -13,13 +13,18 @@ import {
   Tooltip,
   Legend,
 } from "chart.js";
-import { useAuth } from "../context/AuthContext";
 import ManageApplications from "./ManageApplications";
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip, Legend);
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  BarElement,
+  ArcElement,
+  Tooltip,
+  Legend
+);
 
 export default function AdminDashboard() {
-  const { token } = useAuth();
   const [stats, setStats] = useState({
     totalJobs: 0,
     technicalApps: 0,
@@ -28,27 +33,30 @@ export default function AdminDashboard() {
   const [applications, setApplications] = useState([]);
   const [editingAppId, setEditingAppId] = useState(null);
 
-  useEffect(() => {
-    if (!token) return;
+  // useEffect(() => {
+  //   if (!token) return;
 
-    const fetchDashboardData = async () => {
-      try {
-        const resStats = await axiosInstance.get("/admin/dashboard", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setStats(resStats.data.stats);
+  //   const fetchDashboardData = async () => {
+  //     try {
+  //       const resStats = await axiosInstance.get("/admin/dashboard", {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       });
+  //       setStats(resStats.data.stats);
 
-        const resApps = await axiosInstance.get("/admin/applications", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        setApplications(resApps.data.applications);
-      } catch (err) {
-        console.error("Failed to fetch admin dashboard:", err.response?.data?.message || err);
-      }
-    };
+  //       const resApps = await axiosInstance.get("/admin/applications", {
+  //         headers: { Authorization: `Bearer ${token}` },
+  //       });
+  //       setApplications(resApps.data.applications);
+  //     } catch (err) {
+  //       console.error(
+  //         "Failed to fetch admin dashboard:",
+  //         err.response?.data?.message || err
+  //       );
+  //     }
+  //   };
 
-    fetchDashboardData();
-  }, [token]);
+  //   fetchDashboardData();
+  // }, [token]);
 
   const cardStyle = (bgColor) => `card text-white mb-3 shadow-sm ${bgColor}`;
 
@@ -133,13 +141,18 @@ export default function AdminDashboard() {
             <h5 className="text-center mb-3">Applications by Role Type</h5>
             <Bar
               data={roleTypeData}
-              options={{ responsive: true, plugins: { legend: { display: false } } }}
+              options={{
+                responsive: true,
+                plugins: { legend: { display: false } },
+              }}
             />
           </div>
         </div>
         <div className="col-md-6">
           <div className="card shadow-sm p-3">
-            <h5 className="text-center mb-3">Applications Status Distribution</h5>
+            <h5 className="text-center mb-3">
+              Applications Status Distribution
+            </h5>
             <Pie data={statusData} options={{ responsive: true }} />
           </div>
         </div>
@@ -236,4 +249,3 @@ export default function AdminDashboard() {
     </div>
   );
 }
-

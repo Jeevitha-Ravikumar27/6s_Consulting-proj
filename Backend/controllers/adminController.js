@@ -34,7 +34,13 @@ const adminLogin = asyncHandler((req, res) => {
     maxAge: 7 * 24 * 60 * 60 * 1000,
   });
 
-  res.status(200).json({ message: "Admin logged in" });
+  const admin = {
+    email: process.env.ADMIN_EMAIL,
+    name: "Admin User",
+    role: "admin",
+  };
+
+  res.status(200).json(admin);
 });
 
 // Admin Logout

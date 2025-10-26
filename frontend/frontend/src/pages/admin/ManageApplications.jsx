@@ -1,7 +1,5 @@
 
 import React, { useState } from "react";
-import axiosInstance from "../api/axiosInstance";
-import { useAuth } from "../context/AuthContext";
 
 export default function ManageApplications({ app, onClose, onUpdate }) {
   const { token } = useAuth();
@@ -9,22 +7,25 @@ export default function ManageApplications({ app, onClose, onUpdate }) {
   const [comment, setComment] = useState("");
   const [loading, setLoading] = useState(false);
 
-  const handleUpdate = async () => {
-    if (!status) return;
-    setLoading(true);
-    try {
-      const res = await axiosInstance.patch(
-        `/admin/applications/${app._id}`,
-        { status, comment },
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      onUpdate(res.data.application); 
-    } catch (err) {
-      console.error("Failed to update application:", err.response?.data?.message || err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // const handleUpdate = async () => {
+  //   if (!status) return;
+  //   setLoading(true);
+  //   try {
+  //     const res = await axiosInstance.patch(
+  //       `/admin/applications/${app._id}`,
+  //       { status, comment },
+  //       { headers: { Authorization: `Bearer ${token}` } }
+  //     );
+  //     onUpdate(res.data.application);
+  //   } catch (err) {
+  //     console.error(
+  //       "Failed to update application:",
+  //       err.response?.data?.message || err
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
 
   return (
     <div className="card p-3 shadow-sm">

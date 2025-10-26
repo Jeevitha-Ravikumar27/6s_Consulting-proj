@@ -1,17 +1,49 @@
 
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 body {
-  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+  background: linear-gradient(135deg, #f5f5f5 0%, #e0e0e0 100%);
   min-height: 100vh;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  overflow-x: hidden; 
+}
+
+.navbar .container {
+  max-width: 100% !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+}
+
+
+.navbar {
+  width: 100vw;
+  left: 0;
+  right: 0;
+  top: 0;
+  position: sticky;
+  z-index: 1000;
+  background-color: white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+
+.main-content {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  min-height: calc(100vh - 80px); 
+  padding-top: 60px;
 }
 
 
 .card {
   border-radius: 15px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
   padding: 30px;
   background-color: #ffffff;
   width: 100%;
@@ -26,31 +58,68 @@ h2 {
   margin-bottom: 25px;
 }
 
-
-.form-control {
-  border-radius: 8px;
-  height: 45px;
-  font-size: 16px;
-}
-
-
-.btn-primary, .btn-success {
-  border-radius: 8px;
-  height: 45px;
-  font-weight: 500;
-  font-size: 16px;
-}
-
-
-.btn-primary:hover, .btn-success:hover {
-  opacity: 0.9;
-  transform: scale(1.02);
-  transition: all 0.2s ease-in-out;
-}
-
-
+.form-control,
 .form-select {
   border-radius: 8px;
   height: 45px;
   font-size: 16px;
 }
+
+.btn-primary,
+.btn-success {
+  border-radius: 8px;
+  height: 45px;
+  font-weight: 500;
+  font-size: 16px;
+  transition: all 0.2s ease-in-out;
+}
+
+.btn-primary:hover,
+.btn-success:hover {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.container {
+  max-width: 100% !important;
+}
+
+.login-page {
+  width: 100vw;
+  padding: 0;
+  margin: 0;
+}
+
+.applications-page {
+  width: 100vw;
+  min-height: calc(100vh - 80px); 
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; 
+  padding: 40px 20px; 
+  box-sizing: border-box;
+}
+
+.applications-card {
+  width: 100%;
+  max-width: 900px; 
+  background-color: #fff;
+  border-radius: 15px;
+  padding: 30px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.applications-card .list-group-item {
+  border-radius: 10px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.applications-card .list-group-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 25px rgba(0, 0, 0, 0.15);
+}
+
+.applications-page {
+  background-color: #f8f9fa;
+}
+

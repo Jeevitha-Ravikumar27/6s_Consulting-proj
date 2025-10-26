@@ -1,26 +1,34 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "../api/axiosInstance";
+import axiosInstance from "../../api/axiosInstance";
+import AuthContext from "../../context/AuthContext";
+import { toast } from "react-toastify";
 
 export default function Register() {
+  const {} = useContext(AuthContext);
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "", role: "applicant" }); // role fixed
+  const [form, setForm] = useState({ name: "", email: "", password: "" });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axiosInstance.post("/auth/register", { ...form, role: "applicant" });
-      alert("Registration successful! Please login.");
-      navigate("/login"); 
+      const res = await axiosInstance.post("/applicant/register", {
+        ...form,
+      });
+      toast.success("Registration successful");
+      navigate("/dashboard");
       console.log(res.data);
     } catch (error) {
-      alert(error.response?.data?.message || "Registration failed");
+      toast.error(error.message || "Registration failed");
     }
   };
 
   return (
     <div className="container d-flex justify-content-center align-items-center min-vh-100">
-      <div className="card p-4" style={{ minWidth: "300px", maxWidth: "400px" }}>
+      <div
+        className="card p-4"
+        style={{ minWidth: "300px", maxWidth: "400px" }}
+      >
         <h2 className="mb-3 text-center">Create Your Account</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-3">

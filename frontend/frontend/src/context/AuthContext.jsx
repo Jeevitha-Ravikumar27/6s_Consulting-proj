@@ -1,40 +1,113 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
+import API from "../api/axiosInstance";
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [role, setRole] = useState(null);
-  const [token, setToken] = useState(localStorage.getItem("token") || "");
+  const [applications, setApplications] = useState([]);
+  const [userLoading, setUserLoading] = useState(true);
 
-  const login = (userData, userRole, authToken) => {
-    setUser(userData);
-    setRole(userRole);
-    setToken(authToken);
-    localStorage.setItem("token", authToken);
+  useEffect(() => {
+    const savedUser = localStorage.getItem("user");
+    if (savedUser) {
+      setUser(JSON.parse(savedUser));
+    }
+    setUserLoading(false);
+    myApplications();
+  }, []);
+
+  const registerUser = async (name, email, password) => {
+    try {
+      const res = await API.post("/applicant/register", {
+        name,
+        email,
+        password,
+      });
+      console.log(res);
+
+      setUser(res.data);
+      localStorage.setItem("user", JSON.stringify(res.data));
+      setUserLoading(false);
+    } catch (error) {
+      console.error("Registration failed:", error);
+      setUserLoading(false);
+      throw new Error(
+        error.response?.data?.message ||
+          "Registration failed. Please try again."
+      );
+    }
   };
 
-  const logout = () => {
+  const loginUser = async (email, password) => {
+    setUserLoading(true);
+    try {
+      const res = await API.post("/applicant/login", { email, password });
+
+      setUser(res.data);
+      console.log(res.data);
+      localStorage.setItem("user", JSON.stringify(res.data));
+      setUserLoading(false);
+    } catch (error) {
+      console.error("Login failed:", error);
+      throw new Error(
+        error.response?.data?.message || "Login failed. Please try again."
+      );
+    } finally {
+      setUserLoading(false);
+    }
+  };
+
+  const logoutUser = async () => {
+    await API.post("/applicant/logout");
+    localStorage.removeItem("user");
     setUser(null);
-    setRole(null);
-    setToken("");
-    localStorage.removeItem("token");
   };
 
-  const getToken = () => token;
+  const adminLogin = async (email, password) => {
+    setUserLoading(true);
+    try {
+      const res = await API.post("/admin/login", { email, password });
+      setUser(res.data);
+      localStorage.setItem("user", JSON.stringify(res.data));
+    } catch (error) {
+      console.error("Admin login failed:", error);
+      throw new Error(
+        error.response?.data?.message || "Admin login failed. Please try again."
+      );
+    } finally {
+      setUserLoading(false);
+    }
+  };
 
-  return (
-    <AuthContext.Provider value={{ user, role, token, login, logout, getToken }}>
-      {children}
-    </AuthContext.Provider>
-  );
-};
+  const adminLogout = async () => {
+    await API.post("/admin/logout");
+    localStorage.removeItem("user");
+    setUser(null);
+  };
 
-export const useAuth = () => useContext(AuthContext);
+  const myApplications = async () => {
+    try {
+      const res = await API.get("/applicant/my-applications");
+      setApplications(res.data);
+    } catch (error) {
+      console.error("Failed to fetch applications:", error);
+    }
+  };
 
+  const value = {
+    user,
+    userLoading,
+    loginUser,
+    logoutUser,
+    registerUser,
+    adminLogin,
+    applications,
+    myApplications,
+    adminLogout,
+  };
 
-export const getAuthToken = () => {
-  return localStorage.getItem("token") || "";
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContext;

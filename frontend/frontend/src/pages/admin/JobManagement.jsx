@@ -1,29 +1,35 @@
 
 import React, { useState, useEffect } from "react";
-import axiosInstance from "../api/axiosInstance";
-import { useAuth } from "../context/AuthContext";
 
 export default function JobManagement() {
   const { token } = useAuth();
   const [jobs, setJobs] = useState([]);
-  const [form, setForm] = useState({ title: "", description: "", roleType: "technical", id: "" });
+  const [form, setForm] = useState({
+    title: "",
+    description: "",
+    roleType: "technical",
+    id: "",
+  });
   const [loading, setLoading] = useState(false);
 
-  const fetchJobs = async () => {
-    if (!token) return;
-    try {
-      const res = await axiosInstance.get("/admin/jobs", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      setJobs(res.data.jobs);
-    } catch (err) {
-      console.error("Failed to fetch jobs:", err.response?.data?.message || err);
-    }
-  };
+  // const fetchJobs = async () => {
+  //   if (!token) return;
+  //   try {
+  //     const res = await axiosInstance.get("/admin/jobs", {
+  //       headers: { Authorization: `Bearer ${token}` },
+  //     });
+  //     setJobs(res.data.jobs);
+  //   } catch (err) {
+  //     console.error(
+  //       "Failed to fetch jobs:",
+  //       err.response?.data?.message || err
+  //     );
+  //   }
+  // };
 
-  useEffect(() => {
-    fetchJobs();
-  }, [token]);
+  // useEffect(() => {
+  //   fetchJobs();
+  // }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -99,7 +105,9 @@ export default function JobManagement() {
               className="form-control"
               placeholder="Job Description"
               value={form.description}
-              onChange={(e) => setForm({ ...form, description: e.target.value })}
+              onChange={(e) =>
+                setForm({ ...form, description: e.target.value })
+              }
               required
               disabled={form.id && form.roleType === "technical"}
             />
@@ -109,13 +117,17 @@ export default function JobManagement() {
               className="form-select"
               value={form.roleType}
               onChange={(e) => setForm({ ...form, roleType: e.target.value })}
-              disabled={form.id} 
+              disabled={form.id}
             >
               <option value="technical">Technical</option>
               <option value="non-technical">Non-Technical</option>
             </select>
           </div>
-          <button type="submit" className="btn btn-primary w-100" disabled={loading}>
+          <button
+            type="submit"
+            className="btn btn-primary w-100"
+            disabled={loading}
+          >
             {loading ? "Saving..." : form.id ? "Update Job" : "Create Job"}
           </button>
         </form>
@@ -134,7 +146,10 @@ export default function JobManagement() {
                 <button className="btn btn-sm btn-warning me-2" disabled>
                   Edit (read-only)
                 </button>
-                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(job._id)}>
+                <button
+                  className="btn btn-sm btn-danger"
+                  onClick={() => handleDelete(job._id)}
+                >
                   Delete
                 </button>
               </div>
@@ -152,10 +167,16 @@ export default function JobManagement() {
               <p>{job.description}</p>
               <span className="badge bg-info mb-2">{job.roleType}</span>
               <div>
-                <button className="btn btn-sm btn-warning me-2" onClick={() => handleEdit(job)}>
+                <button
+                  className="btn btn-sm btn-warning me-2"
+                  onClick={() => handleEdit(job)}
+                >
                   Edit
                 </button>
-                <button className="btn btn-sm btn-danger" onClick={() => handleDelete(job._id)}>
+                <button
+                  className="btn btn-sm btn-danger"
+                  onClick={() => handleDelete(job._id)}
+                >
                   Delete
                 </button>
               </div>

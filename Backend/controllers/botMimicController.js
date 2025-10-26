@@ -21,6 +21,8 @@ const loginBotMimic = asyncHandler(async (req, res) => {
       expiresIn: "1d",
     });
 
+    const result = { role: "bot", email };
+
     // Send cookie
     res
       .cookie("jwt", token, {
@@ -29,7 +31,7 @@ const loginBotMimic = asyncHandler(async (req, res) => {
         maxAge: 24 * 60 * 60 * 1000,
       })
       .status(200)
-      .json({ message: "Bot Mimic logged in successfully" });
+      .json(result);
   } else {
     res.status(401);
     throw new Error("Invalid Bot credentials");
@@ -42,6 +44,19 @@ const logoutBotMimic = asyncHandler(async (req, res) => {
     .cookie("jwt", "", { httpOnly: true, expires: new Date(0) })
     .status(200)
     .json({ message: "Bot Mimic logged out successfully" });
+});
+
+const getTechnicalApplications = asyncHandler(async (req, res) => {
+  const applications = await Application.find()
+    .populate("applicantId", "name email")
+    .populate("jobId", "title roleType");
+
+  // Filter only technical roles
+  const technicalApps = applications.filter(
+    (app) => app.jobId?.roleType?.toLowerCase() === "technical"
+  );
+
+  res.status(200).json(technicalApps);
 });
 
 const workflow = [
@@ -117,4 +132,4 @@ const runBotMimic = asyncHandler(async (req, res) => {
   });
 });
 
-export { runBotMimic, loginBotMimic, logoutBotMimic };
+export { runBotMimic, loginBotMimic, logoutBotMimic, getTechnicalApplications };

@@ -18,6 +18,7 @@ import ApplyJob from "./pages/applicant/ApplyJob.jsx";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import ActivityLog from "./pages/admin/ActivityLog.jsx";
+import BotDashboard from "./pages/bot/botDashboard.jsx";
 
 function App() {
   return (
@@ -97,7 +98,18 @@ function App() {
           }
         />
 
+        {/* common routes */}
         <Route path="/jobs" element={<Jobs />} />
+
+        {/* Bot routes */}
+        <Route
+          path="/bot/dashboard"
+          element={
+            <ProtectedRoute role={["bot"]}>
+              <BotDashboard />
+            </ProtectedRoute>
+          }
+        />
 
         {/* Default redirect */}
         <Route path="*" element={<Navigate to="/login" />} />
@@ -107,4 +119,3 @@ function App() {
 }
 
 export default App;
-

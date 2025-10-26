@@ -86,6 +86,22 @@ export const AuthProvider = ({ children }) => {
     setUser(null);
   };
 
+  const botLogin = async (email, password) => {
+    setUserLoading(true);
+    try {
+      const res = await API.post("/bot-mimic/login", { email, password });
+      setUser(res.data);
+      localStorage.setItem("user", JSON.stringify(res.data));
+    } catch (error) {
+      console.error("Bot login failed:", error);
+      throw new Error(
+        error.response?.data?.message || "Bot login failed. Please try again."
+      );
+    } finally {
+      setUserLoading(false);
+    }
+  };
+
   const myApplications = async () => {
     try {
       const res = await API.get("/applicant/my-applications");
@@ -115,10 +131,10 @@ export const AuthProvider = ({ children }) => {
     myApplications,
     adminLogout,
     allApplications,
+    botLogin,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
 export default AuthContext;
-

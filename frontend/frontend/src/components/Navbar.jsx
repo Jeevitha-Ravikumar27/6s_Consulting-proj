@@ -87,7 +87,7 @@ const Navbar = () => {
                 )}
                 {user.role?.toLowerCase() === "bot" && (
                   <li className="nav-item me-2">
-                    <Link className="nav-link text-dark" to="/bot">
+                    <Link className="nav-link text-dark" to="/bot/dashboard">
                       Bot Dashboard
                     </Link>
                   </li>

@@ -1,5 +1,6 @@
 import express from "express";
 import {
+  getTechnicalApplications,
   loginBotMimic,
   logoutBotMimic,
   runBotMimic,
@@ -11,10 +12,16 @@ const router = express.Router();
 router.post("/login", loginBotMimic);
 router.post("/logout", logoutBotMimic);
 
-// Manual trigger for all pending technical applications
+
 router.post("/run", authenticate, authorizeBot, runBotMimic);
 
-// Manual trigger for specific application by ID
+
 router.post("/run/:id", authenticate, authorizeBot, runBotMimic);
 
+router.get(
+  "/technical-applications",
+  authenticate,
+  authorizeBot,
+  getTechnicalApplications
+);
 export default router;

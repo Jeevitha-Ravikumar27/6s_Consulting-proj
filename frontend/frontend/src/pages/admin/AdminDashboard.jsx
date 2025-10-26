@@ -199,70 +199,60 @@ export default function AdminDashboard() {
           </tr>
         </thead>
         <tbody>
-          {filteredApplications.length > 0 ? (
-            filteredApplications.map((app) => (
-              <React.Fragment key={app._id}>
-                <tr onClick={() => navigate(`/admin/activity-log/${app._id}`)} className="cursor-pointer">
-                  <td>{app.jobId?.title || "N/A"}</td>
-                  <td>{app.applicantId?.name || "N/A"}</td>
-                  <td>{app.roleType}</td>
-                  <td>
-                    <span
-  className={`badge ${
-    app.status === "Approved"
-      ? "bg-success"
-      : app.status === "Rejected"
-      ? "bg-danger"
-      : app.status === "Under Review"
-      ? "bg-warning"
-      : "bg-secondary"
-  }`}
-  style={{
-    display: "inline-block",
-    width: "110px",      
-    textAlign: "center", 
-  }}
->
-  {app.status}
-</span>
+  {filteredApplications.length > 0 ? (
+    filteredApplications.map((app) => (
+      <React.Fragment key={app._id}>
+        <tr
+          onClick={() => navigate(`/admin/activity-log/${app._id}`)}
+          className="cursor-pointer"
+        >
+          <td>{app.jobId?.title || "N/A"}</td>
+          <td>{app.applicantId?.name || "N/A"}</td>
+          <td>{app.roleType}</td>
+          <td>
+            <span className={`badge ${
+              app.status === "Approved" ? "bg-success" :
+              app.status === "Rejected" ? "bg-danger" :
+              app.status === "Under Review" ? "bg-warning" : "bg-secondary"
+            }`}>
+              {app.status}
+            </span>
+          </td>
+          <td>{new Date(app.updatedAt).toLocaleString()}</td>
+          <td>{app.latestComment || "-"}</td>
+          <td onClick={(e) => e.stopPropagation()}>
+            {app.roleType === "non-technical" ? (
+              <button className="btn btn-sm btn-primary" onClick={() => setEditingAppId(app._id)}>
+                Update
+              </button>
+            ) : (
+              <span className="text-muted">—</span>
+            )}
+          </td>
+        </tr>
 
-                  </td>
-                  <td>{new Date(app.updatedAt).toLocaleString()}</td>
-                  <td>{app.latestComment || "-"}</td>
-                  <td onClick={(e) => e.stopPropagation()}>
-                    {app.roleType === "non-technical" ? (
-                      <button className="btn btn-sm btn-primary" onClick={() => setEditingAppId(app._id)}>
-                        Update
-                      </button>
-                    ) : (
-                      <span className="text-muted">—</span>
-                    )}
-                  </td>
-                </tr>
-                {editingAppId === app._id && (
-  <tr>
-    <td colSpan={7}>
-      <div style={{ maxWidth: "500px", margin: "10px auto", padding: "15px", border: "1px solid #ddd", borderRadius: "8px", backgroundColor: "#f8f9fa" }}>
-        <ManageApplications
-          app={app}
-          onClose={() => setEditingAppId(null)}
-          onUpdate={handleUpdate}
-        />
-      </div>
-    </td>
-  </tr>
-)}
+        {editingAppId === app._id && (
+          <tr>
+            <td colSpan={7}>
+              <ManageApplications
+                app={app}
+                onClose={() => setEditingAppId(null)}
+                onUpdate={handleUpdate}
+              />
+            </td>
+          </tr>
+        )}
+      </React.Fragment>
+    ))
+  ) : (
+    <tr>
+      <td colSpan={7} className="text-muted py-5">
+        No applications found for this category.
+      </td>
+    </tr>
+  )}
+</tbody>
 
-              </React.Fragment>
-            ))
-          ) : (
-            <tr>
-              <td colSpan={7} className="text-muted py-5">
-                No applications found for this category.
-              </td>
-            </tr>
-          )}
-        </tbody>
       </table>
     </div>
   </div>

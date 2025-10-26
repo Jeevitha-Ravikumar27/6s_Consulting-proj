@@ -9,13 +9,13 @@ export default function Login() {
   const { loginUser, adminLogin, botLogin, user } = useContext(AuthContext);
 
   const [form, setForm] = useState({ email: "", password: "" });
-  const [role, setRole] = useState("applicant"); // default role
+  const [role, setRole] = useState("applicant"); 
 
   if (user) {
-    // Redirect logged in users based on their role
+    
     if (user.role === "applicant") navigate("/dashboard");
     else if (user.role === "admin") navigate("/admin/dashboard");
-    else if (user.role === "bot") navigate("/bot");
+    else if (user.role === "bot") navigate("/bot/dashboard");
   }
 
   const handleSubmit = async (e) => {
@@ -29,10 +29,10 @@ export default function Login() {
         `${role.charAt(0).toUpperCase() + role.slice(1)} login successful!`
       );
 
-      // Redirect based on role
+     
       if (role === "applicant") navigate("/dashboard");
       else if (role === "admin") navigate("/admin/dashboard");
-      else navigate("/bot");
+      else navigate("/bot/dashboard");
     } catch (error) {
       toast.error(error.message);
     }

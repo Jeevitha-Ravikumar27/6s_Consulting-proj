@@ -14,6 +14,8 @@ A robust, modular job application management system designed to streamline the h
 - **Secure Authentication:** Utilizes **JWT tokens** stored in secure, \`SameSite\` and **HTTPS-only cookies** for session management.
 
 ---
+<a href="https://sixs-consulting-proj-frontend-1.onrender.com">link </a>
+
 
 ## Architecture Overview
 
